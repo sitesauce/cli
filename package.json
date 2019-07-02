@@ -1,0 +1,38 @@
+{
+	"name": "sitesauce-cli",
+	"version": "0.0.1",
+	"description": "The Sitesauce CLI.",
+	"license": "MIT",
+	"repository": "sitesauce/cli",
+	"author": {
+		"name": "Miguel Piedrafita",
+		"email": "soy@miguelpiedrafita.com",
+		"url": "https://miguelpiedrafita"
+	},
+	"bin": {
+		"sitesauce": "cli.js"
+	},
+	"engines": {
+		"node": ">=8"
+	},
+	"scripts": {
+		"test": "xo && ava"
+	},
+	"files": [
+		"cli.js"
+	],
+	"keywords": [
+		"cli",
+		"cli-app",
+		"sitesauce"
+	],
+	"dependencies": {
+		"conf": "^6.2.0",
+		"meow": "^5.0.0"
+	},
+	"devDependencies": {
+		"ava": "^2.1.0",
+		"execa": "^2.0.0",
+		"xo": "^0.24.0"
+	}
+}
