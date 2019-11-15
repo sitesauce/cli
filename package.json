@@ -27,8 +27,12 @@
 		"sitesauce"
 	],
 	"dependencies": {
+		"@hapi/hapi": "^18.4.0",
 		"conf": "^6.2.0",
-		"meow": "^5.0.0"
+		"meow": "^5.0.0",
+		"open": "^7.0.0",
+		"querystring": "^0.2.0",
+		"uuid": "^3.3.3"
 	},
 	"devDependencies": {
 		"ava": "^2.1.0",
