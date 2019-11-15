@@ -2,7 +2,7 @@ const Conf = require('conf');
 
 const schema = {
 	token: {
-		type: 'string',
+		type: 'string'
 	}
 };
 
