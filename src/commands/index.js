@@ -4,7 +4,7 @@ const auth = require('./auth');
 const client = require('./../client');
 
 module.exports = {
-	auth,
+	...auth,
 	...(client.isAuthenticated() && {
 		ping,
 		init

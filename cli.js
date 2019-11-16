@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 const meow = require('meow');
-const utils = require('./scr/utils');
-const commands = require('./scr/commands');
+const utils = require('./src/utils');
+const commands = require('./src/commands');
 
 const cli = meow(`
 		Usage
