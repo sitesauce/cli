@@ -1,4 +1,4 @@
-const config = require('../../config');
+const config = require('../../config/global');
 
 function handle() {
 	config.delete('token');

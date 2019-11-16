@@ -7,7 +7,8 @@ const schema = {
 };
 
 const config = new Conf({
-	schema
+	schema,
+	projectName: 'sitesauce'
 });
 
 module.exports = config;

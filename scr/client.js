@@ -1,5 +1,5 @@
-const axios = require('axios')
-const config = require('./config')
+const axios = require('axios');
+const config = require('./config/global');
 
 class Client {
 	constructor() {
@@ -8,28 +8,32 @@ class Client {
 			headers: {
 				Authorization: `Bearer ${config.get('token')}`
 			}
-		})
+		});
 	}
 
 	isAuthenticated() {
-		return config.has('token')
+		return config.has('token');
 	}
 
-	async getUser() {
-		return await this.client.get('user').then(response => response.data)
+	getUser() {
+		return this.client.get('user').then(response => response.data);
 	}
 
-	async getTeam() {
-		return await this.client.get('team').then(response => response.data)
+	getTeam() {
+		return this.client.get('team').then(response => response.data);
 	}
 
-	async getTeams() {
-		return await this.client.get('teams').then(response => response.data)
+	getTeams() {
+		return this.client.get('teams').then(response => response.data);
 	}
 
-	async switchTeam(teamId) {
-		return await this.client.post(`teams/switch/${teamId}`).then(response => response.data)
+	switchTeam(teamId) {
+		return this.client.post(`teams/switch/${teamId}`).then(response => response.data);
+	}
+
+	getSites() {
+		return this.client.get('team/sites').then(response => response.data);
 	}
 }
 
-module.exports = new Client
+module.exports = new Client();

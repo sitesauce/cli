@@ -1,13 +1,12 @@
 const ping = require('./ping');
-const login = require('./auth/login');
-const logout = require('./auth/logout');
-const user = require('./auth/user');
-const team = require('./auth/team');
+const init = require('./init');
+const auth = require('./auth');
+const client = require('./../client');
 
 module.exports = {
-	ping,
-	login,
-	user,
-	logout,
-	team,
+	auth,
+	...(client.isAuthenticated() && {
+		ping,
+		init
+	})
 };

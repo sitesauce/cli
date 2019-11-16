@@ -1,10 +1,9 @@
+const querystring = require('querystring');
 const ora = require('ora');
 const open = require('open');
 const uuid = require('uuid/v1');
 const hapi = require('@hapi/hapi');
-const config = require('../../config');
-const querystring = require('querystring');
-
+const config = require('../../config/global');
 
 async function handle() {
 	const spinner = ora('Logging you in...').start();
@@ -12,7 +11,7 @@ async function handle() {
 
 	config.set({token});
 
-	spinner.succeed('Successfully logged in to your Sitesauce account!')
+	spinner.succeed('Successfully logged in to your Sitesauce account!');
 }
 
 const buildAuthorizeUrl = () => {
