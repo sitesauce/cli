@@ -34,6 +34,14 @@ class Client {
 	getSites() {
 		return this.client.get('team/sites').then(response => response.data);
 	}
+
+	createDeployment(siteId, opts) {
+		return this.client.post(`sites/${siteId}/deployments/tunnel`, opts).then(response => response.data)
+	}
+
+	getDeploymentInfo(siteId, deploymentId) {
+		return this.client.get(`sites/${siteId}/deployments/${deploymentId}/info`).then(response => response.data)
+	}
 }
 
 module.exports = new Client();
