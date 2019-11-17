@@ -16,7 +16,7 @@ async function handler() {
 
 const buildAuthorizeUrl = () => {
 	const params = querystring.stringify({
-		client_id: 6,
+		client_id: 3,
 		response_type: 'token',
 		scope: '',
 		redirect_uri: 'http://localhost:49156/callback',
