@@ -5,7 +5,7 @@ const uuid = require('uuid/v1');
 const hapi = require('@hapi/hapi');
 const config = require('../../config/global');
 
-async function handle() {
+async function handler() {
 	const spinner = ora('Logging you in...').start();
 	const token = await executeAuthFlow();
 
@@ -55,4 +55,8 @@ const executeAuthFlow = () => {
 	});
 };
 
-module.exports = handle;
+module.exports = {
+	command: 'login',
+	describe: 'Connect your Sitesauce account',
+	handler
+};

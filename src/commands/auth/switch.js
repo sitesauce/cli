@@ -2,7 +2,7 @@ const ora = require('ora')
 const inquirer = require('inquirer')
 const client = require('./../../client');
 
-async function handle() {
+async function handler() {
 	let spinner = ora('Fetching teams').start();
 	const [teams, currentTeam] = await Promise.all([client.getTeams(), client.getTeam()])
 	spinner.succeed();
@@ -22,4 +22,13 @@ async function handle() {
 	spinner.succeed(`Successfully switched to ${team.is_personal ? 'your personal team' : team.name}.`);
 }
 
-module.exports = handle;
+module.exports = {
+	command: 'switch',
+	describe: 'Switch the team',
+	builder: {
+		team: {
+			alias: 't',
+		}
+	},
+	handler
+};

@@ -1,9 +1,13 @@
 const config = require('../../config/global');
 
-function handle() {
+function handler() {
 	config.delete('token');
 
 	console.log('You\'ve been logged out!');
 }
 
-module.exports = handle;
+module.exports = {
+	command: 'logout',
+	describe: 'Log the authenticated user out',
+	handler
+};

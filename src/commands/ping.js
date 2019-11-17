@@ -1,5 +1,9 @@
-function handle() {
+function handler() {
 	console.log('Pong!');
 }
 
-module.exports = handle;
+module.exports = {
+	command: 'ping',
+	describe: 'Pong!',
+	handler
+};

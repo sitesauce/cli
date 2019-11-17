@@ -2,8 +2,8 @@ const inquirer = require('inquirer');
 const client = require('./../client');
 const config = require('./../config/local');
 
-async function handle() {
-	await ensureOverwrite();
+async function handler(argv) {
+	await ensureOverwrite(argv);
 
 	const sites = await client.getSites();
 
@@ -27,8 +27,8 @@ async function handle() {
 	});
 }
 
-async function ensureOverwrite() {
-	if (config.get('init')) {
+async function ensureOverwrite(argv) {
+	if (config.get('init') && !argv.force) {
 		const {overwrite} = await inquirer.prompt([{
 			type: 'confirm',
 			name: 'overwrite',
@@ -44,4 +44,16 @@ async function ensureOverwrite() {
 	}
 }
 
-module.exports = handle;
+module.exports = {
+	command: 'init',
+	describe: 'Configure Sitesauce on the current directory.',
+	builder: {
+		force: {
+			alias: 'f',
+			default: false,
+			type: 'boolean',
+			description: 'Overwrite existing config if it exists'
+		}
+	},
+	handler
+};
