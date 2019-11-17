@@ -1,4 +1,5 @@
 const Conf = require('conf');
+const fs = require('fs')
 
 const schema = {
 	init: {
@@ -10,7 +11,13 @@ const schema = {
 	}
 };
 
-const config = new Conf({
+class LocalConf extends Conf {
+	deleteFile() {
+		fs.unlinkSync(`${process.cwd()}/.sitesauce.json`)
+	}
+}
+
+const config = new LocalConf({
 	schema,
 	configName: '.sitesauce',
 	projectName: 'sitesauce',
