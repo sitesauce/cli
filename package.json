@@ -1,6 +1,6 @@
 {
 	"name": "sitesauce-cli",
-	"version": "0.0.1",
+	"version": "0.0.3",
 	"description": "The Sitesauce CLI.",
 	"license": "MIT",
 	"repository": "sitesauce/cli",
@@ -15,12 +15,6 @@
 	"engines": {
 		"node": ">=8"
 	},
-	"scripts": {
-		"test": "xo && ava"
-	},
-	"files": [
-		"cli.js"
-	],
 	"keywords": [
 		"cli",
 		"cli-app",
@@ -38,10 +32,5 @@
 		"querystring": "^0.2.0",
 		"uuid": "^3.3.3",
 		"yargs": "^14.2.0"
-	},
-	"devDependencies": {
-		"ava": "^2.1.0",
-		"execa": "^2.0.0",
-		"xo": "^0.24.0"
 	}
 }
