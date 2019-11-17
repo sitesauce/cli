@@ -4,7 +4,7 @@ const config = require('./config/global');
 class Client {
 	constructor() {
 		this.client = axios.create({
-			baseURL: 'http://sitesauce.wip/api/',
+			baseURL: 'http://app.sitesauce.app/api/',
 			headers: {
 				Authorization: `Bearer ${config.get('token')}`
 			}
