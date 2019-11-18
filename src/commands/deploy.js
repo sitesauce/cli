@@ -19,6 +19,7 @@ async function handler(argv) {
 	let spinner = ora('Starting reverse tunnel...').start();
 	const tunnel = await localtunnel({
 		port,
+		host: 'https://tunnel.sitesauce.app',
 		local_host: argv.host ? argv.host : 'localhost',
 		allow_invalid_cert: true,
 	}).catch(() => {

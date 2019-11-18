@@ -23,7 +23,7 @@ const buildAuthorizeUrl = () => {
 		state: uuid()
 	});
 
-	return `https://sitesauce.wip/oauth/authorize?${params}`;
+	return `https://app.sitesauce.app/oauth/authorize?${params}`;
 };
 
 const executeAuthFlow = () => {
