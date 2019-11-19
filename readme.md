@@ -28,6 +28,8 @@ $ sitesauce login
 
 You can get the name of the currently authenticated user with `$ sitesauce user`. You can get the name of the currently connected team with `$ sitesauce team` and change the team you're currently connected to using `$ sitesauce switch`.
 
+If you want to log out, you can do so by running `$ sitesauce logout`.
+
 ## Configuring a project
 
 Projects associate Sitesauce sites and the directories on your machine that contain those sites. To associate a directory with a site, open that directory in your terminal and run `$ sitesauce init`. This will create a `.sitesauce.json` config file that you can add to your `.gitignore` if you don't want to commit (there's no sensitive information, so it shouldn't really matter).
@@ -47,6 +49,10 @@ $ sitesauce deploy --port 80 --host laravel.test
 ```
 
 You might also have noticed we're specifying the port via the `--port` flag, skipping the port prompt and making the whole process faster.
+
+### Known limitations
+
+If your local server uses a self-signed certificate and forces HTTPS support, there's a chance the deployment will fail. To fix it, you can temporally unsecure your site while you deploy. For example, when deploying a Valet site you've used `valet secure` on, you might have to run `valet unsecure` before deploying.
 
 ## Usage
 
