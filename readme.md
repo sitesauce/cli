@@ -28,6 +28,25 @@ $ sitesauce login
 
 You can get the name of the currently authenticated user with `$ sitesauce user`. You can get the name of the currently connected team with `$ sitesauce team` and change the team you're currently connected to using `$ sitesauce switch`.
 
+## Configuring a project
+
+Projects associate Sitesauce sites and the directories on your machine that contain those sites. To associate a directory with a site, open that directory in your terminal and run `$ sitesauce init`. This will create a `.sitesauce.json` config file that you can add to your `.gitignore` if you don't want to commit (there's no sensitive information, so it shouldn't really matter).
+
+## Deploying a project
+
+> NOTE: Make sure you've configured your project before attempting to deploy it.
+
+To deploy a project, open the project directory and run `$ sitesauce deploy`. This will ask you for the port your application is running in and open a secure tunnel between your computer and our server that will be closed as soon as the deployment is finished.
+
+### Customizing the Host header
+
+Some server applications (like [Laravel Valet](https://laravel.com/docs/valet)) use the Host header to decide which site to serve. To deploy this types of applications, you can use the `--host`. For example, if you were to deploy a Valet site, you would have to use the following command
+
+```bash
+$ sitesauce deploy --port 80 --host laravel.test
+```
+
+You might also have noticed we're specifying the port via the `--port` flag, skipping the port prompt and making the whole process faster.
 
 ## Usage
 
