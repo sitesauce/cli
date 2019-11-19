@@ -18,6 +18,16 @@ You can also use Yarn
 $ yarn global add sitesauce-cli
 ```
 
+## Authenticating with Sitesauce
+
+The CLI needs to authenticate with Sitesauce to deploy to your sites. You can connect your account by running the following command:
+
+```bash
+$ sitesauce login
+```
+
+You can get the name of the currently authenticated user with `sitesauce user`. You can get the name of the currently connected team with `sitesauce team` and change the team you're currently connected to using `sitesauce switch`.
+
 
 ## Usage
 
