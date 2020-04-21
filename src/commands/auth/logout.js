@@ -1,7 +1,7 @@
 const config = require('../../config/global');
 
 function handler() {
-	config.delete('token');
+	config.reset()
 
 	console.log('You\'ve been logged out!');
 }

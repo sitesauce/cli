@@ -1,34 +1,56 @@
 const inquirer = require('inquirer');
+const ora = require('ora')
 const client = require('./../client');
-const config = require('./../config/local');
+const { local: config, global: globalConfig } = require('./../config');
 
 async function handler(argv) {
 	await ensureOverwrite(argv);
 
 	const sites = await client.getSites();
 
-	const {siteId} = await inquirer.prompt([{
+	let { siteId } = await inquirer.prompt([{
 		type: 'list',
 		name: 'siteId',
 		message: 'What site should we associate this project with?',
 		choices: [
-			...sites.map(site => ({name: `${site.name} (${site.url})`, value: site.id})),
+			...sites.map(site => ({name: `${site.name} (${site.cli ? 'CLI-only' : site.url})`, value: site.id})),
 			new inquirer.Separator(),
 			{
 				name: 'Create New Site',
-				disabled: 'soon'
+				value: 'create'
 			}
 		]
 	}]);
 
+	if (siteId === 'create') siteId = await createSite()
+
 	config.set({
-		init: true,
-		siteId
+		siteId,
+		teamId: globalConfig.get('teamId')
 	});
+
+	ora('Associating your site').succeed('Site associated successfully')
+}
+
+async function createSite() {
+	const { siteName } = await inquirer.prompt([
+		{
+			type: 'input',
+			name: 'siteName',
+			message: 'How should this site be called?',
+			validate: (siteName) => siteName.trim().length > 0,
+		},
+	]);
+
+	const spinner = ora(`Creating ${siteName}...`).start();
+	const site = await client.createSite({ name: siteName, cli: true })
+	spinner.succeed('Site created successfully')
+
+	return site.id
 }
 
 async function ensureOverwrite(argv) {
-	if (config.get('init') && !argv.force) {
+	if (config.get('teamId') && !argv.force) {
 		const {overwrite} = await inquirer.prompt([{
 			type: 'confirm',
 			name: 'overwrite',
@@ -36,9 +58,7 @@ async function ensureOverwrite(argv) {
 			default: false
 		}]);
 
-		if (!overwrite) {
-			process.exit();
-		}
+		if (!overwrite) return
 
 		config.reset();
 	}

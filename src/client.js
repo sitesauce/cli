@@ -7,7 +7,8 @@ class Client {
 			baseURL: 'https://app.sitesauce.app/api/',
 			headers: {
 				Authorization: `Bearer ${config.get('token')}`
-			}
+			},
+
 		});
 	}
 
@@ -20,19 +21,19 @@ class Client {
 	}
 
 	getTeam() {
-		return this.client.get('team').then(response => response.data);
+		return this.client.get(`team/${config.get('teamId')}`).then(response => response.data);
 	}
 
 	getTeams() {
-		return this.client.get('teams').then(response => response.data);
-	}
-
-	switchTeam(teamId) {
-		return this.client.post(`teams/switch/${teamId}`).then(response => response.data);
+		return this.client.get('user/teams').then(response => response.data);
 	}
 
 	getSites() {
-		return this.client.get('team/sites').then(response => response.data);
+		return this.client.get(`team/${config.get('teamId')}/sites`).then(response => response.data);
+	}
+
+	createSite(opts) {
+		return this.client.post('sites/create', opts).then(response => response.data)
 	}
 
 	createDeployment(siteId, opts) {

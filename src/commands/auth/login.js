@@ -4,12 +4,21 @@ const open = require('open');
 const uuid = require('uuid/v1');
 const hapi = require('@hapi/hapi');
 const config = require('../../config/global');
+const client = require('../../client');
 
 async function handler() {
 	const spinner = ora('Logging you in...').start();
 	const token = await executeAuthFlow();
 
-	config.set({token});
+	config.set('token', token);
+
+	try {
+		const user = await client.getUser()
+		config.set('teamId', user.current_team_id)
+	} catch (err) {
+		config.reset()
+		return spinner.fail('We had some problems logging you in. Please try again or contact us if the issue persists.')
+	}
 
 	spinner.succeed('Successfully logged in to your Sitesauce account!');
 }

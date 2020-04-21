@@ -1,5 +1,6 @@
 const ora = require('ora')
 const inquirer = require('inquirer')
+const config = require('../../config/global')
 const client = require('./../../client');
 
 async function handler() {
@@ -16,9 +17,7 @@ async function handler() {
 	}])
 
 	const team = Object.values(teams).filter(team => team.id === teamId)[0]
-
-	spinner = ora('Switching to team').start();
-	await client.switchTeam(teamId)
+	config.set('teamId', teamId)
 	spinner.succeed(`Successfully switched to ${team.is_personal ? 'your personal team' : team.name}.`);
 }
 

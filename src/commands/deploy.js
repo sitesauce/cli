@@ -6,40 +6,36 @@ const config = require('./../config/local')
 const isPortReachable = require('is-port-reachable')
 
 async function handler(argv) {
-	if (! config.get('init')) {
-		config.deleteFile()
-		console.log('This project has not been configured. Run sitesauce init to configure it.')
-		process.exit()
-	}
+	if (! config.get('siteId')) return ora().fail('This project has not been configured. Run sitesauce init to configure it.')
 
-	let port = await validatePort(await getPort(argv))
+	const port = await getPort(argv)
 
-	const baseUrl = getBaseUrl(port, argv.host)
+	if (! isPortReachable(port)) return ora().fail('The port you specified is not reachable.')
+
+	const { baseUrl, host } = await getBaseUrl(port, argv.host)
 
 	let spinner = ora('Starting reverse tunnel...').start();
-	const tunnel = await localtunnel({
-		port,
-		host: 'https://tunnel.sitesauce.app',
-		local_host: argv.host ? argv.host : 'localhost',
-		allow_invalid_cert: true,
-	}).catch(() => {
-		spinner.fail()
-		console.error('There was an error when opening the reverse tunnel, please try again later.')
-		process.exit()
-	});
-	spinner.succeed('Reverse tunnel started')
+
+	let tunnel;
+
+	try {
+		tunnel = await localtunnel({
+			port,
+			host: 'https://tunnel.sitesauce.app',
+			local_host: host,
+			allow_invalid_cert: true,
+		})
+
+		spinner.succeed('Reverse tunnel started')
+	} catch {
+		return spinner.fail('There was an error when opening the reverse tunnel, please try again later.')
+	}
 
 	spinner = ora('Starting deployment...').start();
 	let deployment = await startDeployment(tunnel.url, baseUrl)
-	spinner.succeed('Deployment started')
+	spinner.text = 'Deploying your site...'
 
-	deployment = await waitForDeployment(deployment.id, () => {
-		tunnel.close()
-	})
-
-	console.log(`Successfully deployed ${baseUrl} to ${deployment.provider}.`)
-
-	process.exit()
+	await waitForDeployment(deployment.id, spinner, tunnel)
 }
 
 async function getPort(argv) {
@@ -49,21 +45,32 @@ async function getPort(argv) {
 		type: 'number',
 		name: 'port',
 		message: 'What port is this project running its server on?',
-		default: 8080,
+		default: 3000,
 	}]).then(answers => answers.port)
 }
 
-async function validatePort(port) {
-	if (await isPortReachable(port)) return port
+async function getBaseUrl(port, host) {
+	if (host) return { baseUrl : `http://${host}`, host }
 
-	console.log('The port you specified is not reachable.')
-	process.exit(1)
-}
+	if (port !== 80) return { baseUrl: `http://localhost:${port}`, host: 'localhost' }
 
-function getBaseUrl(port, host) {
-	if (host) return `http://${host}`
+	const { shouldDemandHost } = await inquirer.prompt([{
+		name: 'shouldDemandHost',
+		type: 'confirm',
+		message: "Do you want to specify a virtual host? Do this if you're using something like Laravel Valet to serve your sites",
+		default: false,
+	}])
 
-	return `http://localhost:${port}`
+	if (!shouldDemandHost) return { baseUrl: `http://localhost:${port}`, host: 'localhost' }
+
+	host = await inquirer.prompt([{
+		type: 'input',
+		name: 'host',
+		message: 'What virtual host should we connect to? (domain.tld)',
+		validate: host => host.trim().length > 0 && host.includes('.') && ! host.includes('/')
+	}]).then(answers => answers.host)
+
+	return getBaseUrl(port, host)
 }
 
 function startDeployment(tunnelUrl, baseUrl) {
@@ -73,46 +80,46 @@ function startDeployment(tunnelUrl, baseUrl) {
 	})
 }
 
-function waitForDeployment(deploymentId, stopTunnel) {
+function waitForDeployment(deploymentId, spinner, tunnel) {
 	const deploymentPipeline = [
 		{
 			stage: 'site_exists',
-			spinner: ora('Ensure Site Exists').start()
+			spinnerText:'Ensuring Site Exists...'
 		},
 		{
-			spinner: ora('Initialize Deployment'),
-			stage: 'init'
+			stage: 'init',
+			spinnerText: 'Initializing Deployment...',
 		},
 		{
-			spinner: ora('Generate Artifact'),
-			stage: 'generate_artifact'
+			stage: 'zeit_deploy',
+			spinnerText: 'Deploying to ZEIT',
 		},
 		{
-			spinner: ora('Upload Artifact'),
-			stage: 'upload_artifact'
+			stage: 'zeit_build',
+			spinnerText: 'Building static site...',
 		},
 		{
-			spinner: ora('Build pages'),
-			stage: 'provider_build',
+			stage: 'finalize',
+			spinnerText: 'Finishing up deployment...',
 		},
 		{
-			spinner: ora('Finalize Deployment'),
-			stage: 'finalize'
+			stage: 'done',
+			spinnerText: 'Cleaning up the tunnel...',
 		},
 	]
-
-	const stages = deploymentPipeline.map(stage => stage.stage)
 
 	let oldStage;
 
 	return new Promise((resolve, reject) => {
 		const request = () => {
 			client.getDeploymentInfo(config.get('siteId'), deploymentId).then(deployment => {
-				if (deployment.stage && deployment.stage !== oldStage) stageChanged(oldStage, deployment.stage)
+				if (deployment.stage) {
+					if (deployment.stage !== oldStage) stageChangedTo(deployment.stage)
 
-				if (deployment.stage && deployment.stage === 'done') resolve(deployment)
+					if (deployment.stage === 'done') resolve(deployment)
 
-				if (deployment.stage && deployment.stage.startsWith('failed_')) reject(deployment)
+					if (deployment.stage.startsWith('failed_')) reject(deployment)
+				}
 
 				setTimeout(() => {
 					request()
@@ -122,32 +129,21 @@ function waitForDeployment(deploymentId, stopTunnel) {
 			})
 		}
 
-		const stageChanged = (oldStage, newStage) => {
-			if (newStage.startsWith('failed_')) return;
+		const stageChangedTo = newStage => {
+			if (newStage.startsWith('failed_')) return spinner.fail();
 
-			deploymentPipeline.filter(stage => {
-				return parseInt(Object.keys(deploymentPipeline).find(key => deploymentPipeline[key].stage === newStage)) > parseInt(Object.keys(deploymentPipeline).find(key => deploymentPipeline[key].stage === stage.stage))
-			}).forEach(stage => {
-				if (stage.spinner.isSpinning) {
-					stage.spinner.succeed()
-				}
-
-				if (stage.stage === 'generate_artifact') stopTunnel()
-			})
-
-			if(newStage === 'done') return;
-
-			deploymentPipeline.find(stage => stage.stage == newStage).spinner.start()
+			spinner.text = deploymentPipeline.find(stage => stage.stage == newStage).spinnerText
 		}
 
 		request()
+	}).then(() => {
+		tunnel.close()
+
+		spinner.succeed(`Successfully deployed to Sitesauce.`)
 	}).catch(deployment => {
 		if (deployment.stage && deployment.stage.startsWith('failed_')) {
-			deploymentPipeline.find(stage => stage.stage == deployment.stage.split('failed_').filter(str => str !== '')[0]).spinner.fail()
+			spinner.fail()
 		}
-
-		console.error('Failed to deploy to Sitesauce')
-		process.exit()
 	})
 }
 
@@ -163,7 +159,7 @@ module.exports = {
 		host: {
 			alias: 'h',
 			type: 'string',
-			description: 'The host to bind your server to.'
+			description: 'The virtual host to bind your server to.'
 		},
 	},
 	handler

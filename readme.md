@@ -1,8 +1,8 @@
 # The Sitesauce CLI
-> Deploy your local sites directly to Sitesauce
+> Deploy sites running in your computer directly to Sitesauce
 
 ## Motivation
-While Sitesauce aims to remove the need for hosting the dynamic version of your website, it still requires you to host it somewhere Sitesauce can acess so we can generate your static sites. The Sitesauce CLI allows you to deploy your sites directly from your computer, removing the requirement of paying for an external server. While this may not be the first option for everyone (as it doesn't allow you to share an admin panel with the rest of your team), it provides for an interesting alternative, and greatly reduces the friction (and cost) of publishing a new website.
+While Sitesauce aims to remove the need for hosting the dynamic version of your website, it still requires you to host it somewhere acessible so we can generate your static sites. The Sitesauce CLI allows you to deploy your sites directly from your computer, completely removing the need for servers. While this may not be the first option for everyone (as it doesn't allow you to share an admin panel with the rest of your team), it provides for an interesting alternative, and greatly reduces the friction (and cost) of publishing a new website.
 
 ## Install
 
@@ -32,11 +32,11 @@ If you want to log out, you can do so by running `$ sitesauce logout`.
 
 ## Configuring a project
 
-Projects associate Sitesauce sites and the directories on your machine that contain those sites. To associate a directory with a site, open that directory in your terminal and run `$ sitesauce init`. This will create a `.sitesauce.json` config file that you can add to your `.gitignore` if you don't want to commit (there's no sensitive information, so it shouldn't really matter).
+Projects associate Sitesauce sites and the directories on your machine that contain those sites. To associate a directory with a site, open that directory in your terminal and run `$ sitesauce init`. This will create a `.sitesauce` folder with your config. We'll also automatically add that folder to your `.gitignore` if you have one.
 
 ## Deploying a project
 
-> NOTE: Make sure you've configured your project before attempting to deploy it.
+> NOTE: Make sure you've configured your project deploying it.
 
 To deploy a project, open the project directory and run `$ sitesauce deploy`. This will ask you for the port your application is running in and open a secure tunnel between your computer and our server that will be closed as soon as the deployment is finished.
 
@@ -49,6 +49,8 @@ $ sitesauce deploy --port 80 --host laravel.test
 ```
 
 You might also have noticed we're specifying the port via the `--port` flag, skipping the port prompt and making the whole process faster.
+
+If you use port 80 but don't specify a host, you'll be asked if you want to use a virtual host.
 
 ### Known limitations
 
@@ -70,4 +72,4 @@ $ sitesauce deploy --help
 
 ## License
 
-Licensed under the MIT license. For more information, [check the license file](license).
+Licensed under the MIT license. For more information, [check the license file](LICENSE).
