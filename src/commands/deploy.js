@@ -91,11 +91,11 @@ function waitForDeployment(deploymentId, spinner, tunnel) {
 			spinnerText: 'Initializing Deployment...',
 		},
 		{
-			stage: 'zeit_deploy',
-			spinnerText: 'Deploying to ZEIT',
+			stage: 'vercel_deploy',
+			spinnerText: 'Deploying to Vercel',
 		},
 		{
-			stage: 'zeit_build',
+			stage: 'vercel_build',
 			spinnerText: 'Building static site...',
 		},
 		{
