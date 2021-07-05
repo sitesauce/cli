@@ -21,7 +21,7 @@
 		"sitesauce"
 	],
 	"dependencies": {
-		"@hapi/hapi": "^19.0.5",
+		"@hapi/hapi": "^20.1.5",
 		"axios": "^0.19.0",
 		"conf": "^6.2.0",
 		"inquirer": "^7.0.0",
